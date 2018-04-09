@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: TheCartPress - PayBox Payment Gateway
-Plugin URI: http://www.paybox.kz
+Plugin URI: http://www.paybox.money
 Description: Integrate your PayBox payment gateway with TheCartPress.
 Version: 1.1
 Author:  Platron
@@ -33,7 +33,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 	        }
 
 	        /**
-	         * Displays a message if TheCartPress is not activated 
+	         * Displays a message if TheCartPress is not activated
 	         *
 	         * @since 1.0
 	         */
@@ -61,7 +61,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 	 * @since 1.0
 	 */
 	function tcp_load_platron_plugin() {
-	        
+
 		class PlatronForTheCartPress extends TCP_Plugin {
 			const protocol = 7;
 
@@ -70,12 +70,12 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					'platron_merchant_id' => array(
 						'title' => __('PayBox Merchant ID', 'tcp-platron'),
 						'type' => 'text',
-						'description' => __('Type in your merchant ID from <a href="https://paybox.kz/admin/merchants.php">PayBox</a>.', 'tcp-platron')
-					),	
+						'description' => __('Type in your merchant ID from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-platron')
+					),
 					'platron_secret_key' => array(
 						'title' => __('Secret key', 'tcp-platron'),
 						'type' => 'text',
-						'description' => __('Secret key from <a href="https://paybox.kz/admin/merchants.php">PayBox</a>.', 'tcp-platron')
+						'description' => __('Secret key from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-platron')
 					),
 					'platron_lifetime' => array(
 						'title' => __('Lifetime', 'tcp-platron'),
@@ -84,10 +84,10 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 						'default' => '0'
 					),
 					'platron_demo_mode' => array(
-						'title' => __( 'Demo mode', 'tcp-platron' ), 
-						'type' => 'checkbox', 
-						'label' => __( 'Enable/Disable', 'tcp-platron' ), 
-						'description' => __( 'To test integration and connection.' ), 
+						'title' => __( 'Demo mode', 'tcp-platron' ),
+						'type' => 'checkbox',
+						'label' => __( 'Enable/Disable', 'tcp-platron' ),
+						'description' => __( 'To test integration and connection.' ),
 						'default' => 'yes'
 					),
 					'platron_payment_system' => array(
@@ -99,11 +99,11 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 						'title' => __('Payment system logo', 'tcp-platron'),
 						'type' => 'text',
 						'description' => 'If you wan`t customer to see payment system logo',
-						'default' => 'https://paybox.kz/assets/frontend/img/logo.png',
+						'default' => 'https://paybox.money/assets/frontend/img/logo.png',
 					),
 				);
 
-				return $fields;			
+				return $fields;
 			}
 			function getTitle() {
 				return TheCartPress_Platron_Loader::$plugin_title;
@@ -125,11 +125,11 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 
 			function saveEditFields( $data ) {
 				$fields = $this->getFields();
-				foreach($fields as $id => $field) {	
+				foreach($fields as $id => $field) {
 					$data[$id] = isset($_REQUEST[$id]) ? $_REQUEST[$id] : '';
 				}
 				return $data;
-			} 
+			}
 
 			function getCheckoutMethodLabel( $instance, $shippingCountry, $shoppingCart = false) {
 				$data = tcp_get_payment_plugin_data( 'PlatronForTheCartPress', $instance );
@@ -140,7 +140,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 				return tcp_string( 'TheCartPress', 'pay_PlatronForTheCartPress-title', $image . $title ); //multilanguage
 			}
 
-			function getCost( $instance, $shippingCountry, $shoppingCart = false ) {			
+			function getCost( $instance, $shippingCountry, $shoppingCart = false ) {
 				return 0;
 			}
 
@@ -160,20 +160,20 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 						$strDescription .= "*".$objItem->qty_ordered;
 					$strDescription .= "; ";
 				}
-				
+
 				$strCurrency = tcp_get_the_currency_iso();
 				$amount = $this->format_price( Orders::getTotal( $order_id ) );
 				if($strCurrency == 'RUR')
 					$strCurrency = 'RUB';
-				
-				$strNotifyUrl = add_query_arg( 
+
+				$strNotifyUrl = add_query_arg(
 					array(
 						'action' => 'tcp_platron_ipn',
 						'instance' => $instance
 					), admin_url( 'admin-ajax.php' ) );
 				$continue_url = add_query_arg( 'tcp_checkout', 'ok', tcp_get_the_checkout_url() );
 				$cancel_url = add_query_arg( 'tcp_checkout', 'ko', tcp_get_the_checkout_url() );
-				
+
 				$arrFields = array(
 					'pg_merchant_id'		=> $data['platron_merchant_id'],
 					'pg_order_id'			=> $order_id,
@@ -191,7 +191,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					'pg_request_method'		=> 'GET',
 					'pg_salt'				=> rand(21,43433), // Параметры безопасности сообщения. Необходима генерация pg_salt и подписи сообщения.
 				);
-				
+
 				if(!empty($order->shipping_telephone_1)){
 					preg_match_all("/\d/", $order->shipping_telephone_1, $array);
 					$strPhone = implode('',@$array[0]);
@@ -208,7 +208,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$arrFields['pg_user_email'] = $order->shipping_email;
 					$arrFields['pg_user_contact_email'] = $order->shipping_email;
 				}
-				
+
 				if(!empty($order->billing_email)){
 					$arrFields['pg_user_email'] = $order->billing_email;
 					$arrFields['pg_user_contact_email'] = $order->billing_email;
@@ -218,13 +218,13 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$arrFields['pg_payment_system'] = $data['platron_payment_system'];
 
 				$arrFields['pg_sig'] = PG_Signature::make('payment.php', $arrFields, $data['platron_secret_key']);
-				
-				echo '<form id="platron_payment_form" action="https://www.paybox.kz/payment.php" method="post">';
+
+				echo '<form id="platron_payment_form" action="https://api.paybox.money/payment.php" method="post">';
 				foreach($arrFields as $strName => $strValue){
 					echo '<input type="hidden" name="'.$strName.'" value="'.$strValue.'" />';
 				}
 				echo '<input type="submit" value="'.__('Pay', 'tcp-platron').'" /></form>';
-				
+
 				Orders::editStatus( $order_id, $data['new_status'] );
 				require_once( TCP_CHECKOUT_FOLDER . 'ActiveCheckout.class.php' );
 			}
@@ -234,11 +234,11 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$arrRequest = $_POST;
 				else
 					$arrRequest = $_GET;
-				
+
 				$order = Orders::get( $arrRequest['pg_order_id'] );
 				$data = (object) tcp_get_payment_plugin_data( get_class( $this ), $arrRequest['instance'] );
 				$amount = $this->format_price( Orders::getTotal( $arrRequest['pg_order_id'] ) );
-								
+
 				$thisScriptName = PG_Signature::getOurScriptName();
 				if (empty($arrRequest['pg_sig']) || !PG_Signature::check($arrRequest['pg_sig'], $thisScriptName, $arrRequest, $data->platron_secret_key))
 					die("Wrong signature");
@@ -246,7 +246,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 				if(!isset($arrRequest['pg_result'])){
 					$bCheckResult = 0;
 					if(empty($order) || $order->status != $data->new_status)
-						$error_desc = "Товар не доступен. Либо заказа нет, либо его статус " . $order->status;	
+						$error_desc = "Товар не доступен. Либо заказа нет, либо его статус " . $order->status;
 					elseif(sprintf('%0.2f',$arrRequest['pg_amount']) != sprintf('%0.2f',$amount))
 						$error_desc = "Неверная сумма";
 					else
@@ -266,11 +266,11 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 				}
 				else{
 					$bResult = 0;
-					if(empty($order) || 
+					if(empty($order) ||
 							($order->status != $data->new_status &&
-							!($order->status != Orders::$ORDER_PROCESSING && $arrRequest['pg_result'] == 1) && 
+							!($order->status != Orders::$ORDER_PROCESSING && $arrRequest['pg_result'] == 1) &&
 							( $order->status != Orders::$ORDER_CANCELLED && $arrRequest['pg_result'] == 0)))
-						$strResponseDescription = "Товар не доступен. Либо заказа нет, либо его статус " . $order->status;		
+						$strResponseDescription = "Товар не доступен. Либо заказа нет, либо его статус " . $order->status;
 					elseif(sprintf('%0.2f',$arrRequest['pg_amount']) != sprintf('%0.2f',$amount))
 						$strResponseDescription = "Неверная сумма";
 					else {
@@ -290,7 +290,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$additional = 'PayBox transaction # ' . $arrRequest['pg_payment_id'];
 					// Update the order with new state, transaction id and transaction status message
 					Orders::editStatus( $arrRequest['pg_order_id'], $order_status, $arrRequest['pg_payment_id'], $additional );
-						
+
 					if(!$bResult)
 						if($arrRequest['pg_can_reject'] == 1)
 							$strResponseStatus = 'rejected';
