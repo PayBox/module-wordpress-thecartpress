@@ -15,7 +15,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 	require_once('classes/form-builder.php');
 	require_once('classes/PG_Signature.php');
 
-	class TheCartPress_Platron_Loader {
+	class TheCartPress_Paybox_Loader {
 			public static $plugin_title = 'TheCartPress - PayBox payment gateway';
 			public static $plugin_description = 'Integrates PayBox payment gateway with yout TheCartPress shop.';
 	        /**
@@ -47,56 +47,56 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 	         * @since 1.0
 	         */
 	        static function tcp_init() {
-				tcp_load_platron_plugin();
+				tcp_load_paybox_plugin();
 	        }
 	}
 	//WordPress hooks
-	add_action( 'init'		, array( 'TheCartPress_Platron_Loader', 'init' ) );
+	add_action( 'init'		, array( 'TheCartPress_Paybox_Loader', 'init' ) );
 	//TheCartPress hooks
-	add_action( 'tcp_init'		, array( 'TheCartPress_Platron_Loader', 'tcp_init' ) );
+	add_action( 'tcp_init'		, array( 'TheCartPress_Paybox_Loader', 'tcp_init' ) );
 
 	/**
 	 * Loads the skeleton payment/shipping plugin
 	 *
 	 * @since 1.0
 	 */
-	function tcp_load_platron_plugin() {
+	function tcp_load_paybox_plugin() {
 
-		class PlatronForTheCartPress extends TCP_Plugin {
+		class PayboxForTheCartPress extends TCP_Plugin {
 			const protocol = 7;
 
 			function getFields() {
 				$fields = array(
-					'platron_merchant_id' => array(
-						'title' => __('PayBox Merchant ID', 'tcp-platron'),
+					'paybox_merchant_id' => array(
+						'title' => __('PayBox Merchant ID', 'tcp-paybox'),
 						'type' => 'text',
-						'description' => __('Type in your merchant ID from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-platron')
+						'description' => __('Type in your merchant ID from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-paybox')
 					),
-					'platron_secret_key' => array(
-						'title' => __('Secret key', 'tcp-platron'),
+					'paybox_secret_key' => array(
+						'title' => __('Secret key', 'tcp-paybox'),
 						'type' => 'text',
-						'description' => __('Secret key from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-platron')
+						'description' => __('Secret key from <a href="https://my.paybox.money">PayBox</a>.', 'tcp-paybox')
 					),
-					'platron_lifetime' => array(
-						'title' => __('Lifetime', 'tcp-platron'),
+					'paybox_lifetime' => array(
+						'title' => __('Lifetime', 'tcp-paybox'),
 						'type' => 'text',
 						'description' => 'Time live transaction. Set in minutes. 0 - don`t use. Max 7 days',
 						'default' => '0'
 					),
-					'platron_demo_mode' => array(
-						'title' => __( 'Demo mode', 'tcp-platron' ),
+					'paybox_demo_mode' => array(
+						'title' => __( 'Demo mode', 'tcp-paybox' ),
 						'type' => 'checkbox',
-						'label' => __( 'Enable/Disable', 'tcp-platron' ),
+						'label' => __( 'Enable/Disable', 'tcp-paybox' ),
 						'description' => __( 'To test integration and connection.' ),
 						'default' => 'yes'
 					),
-					'platron_payment_system' => array(
-						'title' => __('Payment system', 'tcp-platron'),
+					'paybox_payment_system' => array(
+						'title' => __('Payment system', 'tcp-paybox'),
 						'type' => 'text',
 						'description' => 'If you wan`t customer to choose payment systen on shop side - set this parameter',
 					),
-					'platron_logo' => array(
-						'title' => __('Payment system logo', 'tcp-platron'),
+					'paybox_logo' => array(
+						'title' => __('Payment system logo', 'tcp-paybox'),
 						'type' => 'text',
 						'description' => 'If you wan`t customer to see payment system logo',
 						'default' => 'https://paybox.money/assets/frontend/img/logo.png',
@@ -106,19 +106,19 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 				return $fields;
 			}
 			function getTitle() {
-				return TheCartPress_Platron_Loader::$plugin_title;
+				return TheCartPress_Paybox_Loader::$plugin_title;
 			}
 
 			function getDescription() {
-				return TheCartPress_Platron_Loader::$plugin_description;
+				return TheCartPress_Paybox_Loader::$plugin_description;
 			}
 
 			function showEditFields( $data ) {
 				$fields = $this->getFields();
 
 				foreach($fields as $id => $field) {
-					if(method_exists('Platron_Form_Builder', $field['type'])) {
-						call_user_func_array(array('Platron_Form_Builder', $field['type']), array($id, $field, $data));
+					if(method_exists('Paybox_Form_Builder', $field['type'])) {
+						call_user_func_array(array('Paybox_Form_Builder', $field['type']), array($id, $field, $data));
 					}
 				}
 			}
@@ -132,12 +132,12 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 			}
 
 			function getCheckoutMethodLabel( $instance, $shippingCountry, $shoppingCart = false) {
-				$data = tcp_get_payment_plugin_data( 'PlatronForTheCartPress', $instance );
+				$data = tcp_get_payment_plugin_data( 'PayboxForTheCartPress', $instance );
 				$title = isset( $data['title'] ) ? $data['title'] : $this->getTitle();
 				$image = '';
-				if(!empty($data['platron_logo']))
-					$image = "<img src='$data[platron_logo]' alt='$title'> ";
-				return tcp_string( 'TheCartPress', 'pay_PlatronForTheCartPress-title', $image . $title ); //multilanguage
+				if(!empty($data['paybox_logo']))
+					$image = "<img src='$data[paybox_logo]' alt='$title'> ";
+				return tcp_string( 'TheCartPress', 'pay_PayboxForTheCartPress-title', $image . $title ); //multilanguage
 			}
 
 			function getCost( $instance, $shippingCountry, $shoppingCart = false ) {
@@ -168,19 +168,19 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 
 				$strNotifyUrl = add_query_arg(
 					array(
-						'action' => 'tcp_platron_ipn',
+						'action' => 'tcp_paybox_ipn',
 						'instance' => $instance
 					), admin_url( 'admin-ajax.php' ) );
 				$continue_url = add_query_arg( 'tcp_checkout', 'ok', tcp_get_the_checkout_url() );
 				$cancel_url = add_query_arg( 'tcp_checkout', 'ko', tcp_get_the_checkout_url() );
 
 				$arrFields = array(
-					'pg_merchant_id'		=> $data['platron_merchant_id'],
+					'pg_merchant_id'		=> $data['paybox_merchant_id'],
 					'pg_order_id'			=> $order_id,
 					'pg_currency'			=> $strCurrency,
 					'pg_amount'				=> sprintf('%0.2f', $amount),
 					'pg_lifetime'			=> isset($this->payment_params->lifetime)?$this->payment_params->lifetime*60:0,
-					'pg_testing_mode'		=> ($data['platron_demo_mode'] == 'yes')?1:0,
+					'pg_testing_mode'		=> ($data['paybox_demo_mode'] == 'yes')?1:0,
 					'pg_description'		=> $strDescription,
 					'pg_user_ip'			=> $_SERVER['REMOTE_ADDR'],
 					'pg_language'			=> (WPLANG == 'ru_RU')?'ru':'en',
@@ -214,22 +214,22 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$arrFields['pg_user_contact_email'] = $order->billing_email;
 				}
 
-				if(!empty($data['platron_payment_system']))
-					$arrFields['pg_payment_system'] = $data['platron_payment_system'];
+				if(!empty($data['paybox_payment_system']))
+					$arrFields['pg_payment_system'] = $data['paybox_payment_system'];
 
-				$arrFields['pg_sig'] = PG_Signature::make('payment.php', $arrFields, $data['platron_secret_key']);
+				$arrFields['pg_sig'] = PG_Signature::make('payment.php', $arrFields, $data['paybox_secret_key']);
 
-				echo '<form id="platron_payment_form" action="https://api.paybox.money/payment.php" method="post">';
+				echo '<form id="paybox_payment_form" action="https://api.paybox.money/payment.php" method="post">';
 				foreach($arrFields as $strName => $strValue){
 					echo '<input type="hidden" name="'.$strName.'" value="'.$strValue.'" />';
 				}
-				echo '<input type="submit" value="'.__('Pay', 'tcp-platron').'" /></form>';
+				echo '<input type="submit" value="'.__('Pay', 'tcp-paybox').'" /></form>';
 
 				Orders::editStatus( $order_id, $data['new_status'] );
 				require_once( TCP_CHECKOUT_FOLDER . 'ActiveCheckout.class.php' );
 			}
 
-			function tcp_platron_ipn() {
+			function tcp_paybox_ipn() {
 				if(!empty($_POST))
 					$arrRequest = $_POST;
 				else
@@ -240,7 +240,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 				$amount = $this->format_price( Orders::getTotal( $arrRequest['pg_order_id'] ) );
 
 				$thisScriptName = PG_Signature::getOurScriptName();
-				if (empty($arrRequest['pg_sig']) || !PG_Signature::check($arrRequest['pg_sig'], $thisScriptName, $arrRequest, $data->platron_secret_key))
+				if (empty($arrRequest['pg_sig']) || !PG_Signature::check($arrRequest['pg_sig'], $thisScriptName, $arrRequest, $data->paybox_secret_key))
 					die("Wrong signature");
 
 				if(!isset($arrRequest['pg_result'])){
@@ -255,7 +255,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$arrResponse['pg_salt']              = $arrRequest['pg_salt']; // в ответе необходимо указывать тот же pg_salt, что и в запросе
 					$arrResponse['pg_status']            = $bCheckResult ? 'ok' : 'error';
 					$arrResponse['pg_error_description'] = $bCheckResult ?  ""  : $error_desc;
-					$arrResponse['pg_sig']				 = PG_Signature::make($thisScriptName, $arrResponse, $data->platron_secret_key);
+					$arrResponse['pg_sig']				 = PG_Signature::make($thisScriptName, $arrResponse, $data->paybox_secret_key);
 
 					$objResponse = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><response/>');
 					$objResponse->addChild('pg_salt', $arrResponse['pg_salt']);
@@ -301,7 +301,7 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 					$objResponse->addChild('pg_salt', $arrRequest['pg_salt']); // в ответе необходимо указывать тот же pg_salt, что и в запросе
 					$objResponse->addChild('pg_status', $strResponseStatus);
 					$objResponse->addChild('pg_description', $strResponseDescription);
-					$objResponse->addChild('pg_sig', PG_Signature::makeXML($thisScriptName, $objResponse, $data->platron_secret_key));
+					$objResponse->addChild('pg_sig', PG_Signature::makeXML($thisScriptName, $objResponse, $data->paybox_secret_key));
 				}
 
 				header("Content-type: text/xml");
@@ -315,11 +315,11 @@ if ( ! class_exists( 'TCPSkeletonLoader' ) ) {
 
 		}
 
-		if ( function_exists( 'tcp_register_payment_plugin' ) ) tcp_register_payment_plugin( 'PlatronForTheCartPress' );
+		if ( function_exists( 'tcp_register_payment_plugin' ) ) tcp_register_payment_plugin( 'PayboxForTheCartPress' );
 
-		$Platron_Instance = new PlatronForTheCartPress();
-		add_action( 'wp_ajax_tcp_platron_ipn'		, array( $Platron_Instance, 'tcp_platron_ipn' ) );
-		add_action( 'wp_ajax_nopriv_tcp_platron_ipn'	, array( $Platron_Instance, 'tcp_platron_ipn' ) );
+		$Paybox_Instance = new PayboxForTheCartPress();
+		add_action( 'wp_ajax_tcp_Paybox_ipn'		, array( $Paybox_Instance, 'tcp_paybox_ipn' ) );
+		add_action( 'wp_ajax_nopriv_tcp_paybox_ipn'	, array( $Paybox_Instance, 'tcp_paybox_ipn' ) );
 	}
 }// class_exists check
 ?>

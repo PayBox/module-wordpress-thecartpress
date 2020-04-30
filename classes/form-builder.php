@@ -1,6 +1,6 @@
 <?php
 
-class Platron_Form_Builder {
+class Paybox_Form_Builder {
 	public static $field_size = 50;
 	public static $max_size = 150;
 
@@ -23,7 +23,7 @@ class Platron_Form_Builder {
 
 	public static function checkbox($id, $field, $data) {
 		$value = self::get($id, $field, $data);
-		$checked = ($value === 'yes') ? 'checked' : ''; 
+		$checked = ($value === 'yes') ? 'checked' : '';
 		$output = "<input type='checkbox' name='{$id}' value='yes' {$checked} />";
 		return self::output($output, $field);
 	}
@@ -34,7 +34,7 @@ class Platron_Form_Builder {
 				return $field['default'];
 			}
 			return '';
-		} 
+		}
 		return $data[$id];
 	}
 
